@@ -128,12 +128,14 @@ def match_with_ideal():
         #
         # print('#' * 60)
 
-        for line in difflib.unified_diff(lines1, lines2, fromfile='ideal', tofile=file):
-            print(line)
+        with open('{0}/diff_{1}'.format(output_folder, file), 'w') as f:
+
+            for line in difflib.unified_diff(lines1, lines2, fromfile='ideal', tofile=file):
+                print(line, file=f)
 
         persetage = difflib.SequenceMatcher(None, text1, text2).ratio() * 100
-        print('Совпадение:', persetage, '%')
-        print('#'*60)
+        print(file, persetage, '%')
+        print('#'*40)
 
 
 if __name__ == '__main__':
@@ -142,10 +144,10 @@ if __name__ == '__main__':
 
     img = Image.open(path)
 
-    # # clear output folder folder
-    # if os.path.exists(output_folder):
-    #     shutil.rmtree(output_folder)
-    # os.makedirs(output_folder)
+    # clear output folder folder
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder)
+    os.makedirs(output_folder)
 
 
 
@@ -185,6 +187,6 @@ if __name__ == '__main__':
     # test_one(img, parameters, output_folder)
     # correlation(img, parameters[0], parameters[1])
     # test_one_with_preset(img, parameter_with_preset)
-    match_with_ideal()
+    # match_with_ideal()
 
 
