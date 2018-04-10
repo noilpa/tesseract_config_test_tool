@@ -3,6 +3,8 @@ try:
 except ImportError:
     from PIL import Image
 import pytesseract
+import numpy as np
+import os
 
 counter = 0
 
@@ -21,7 +23,7 @@ def test_one(img, parameters):
         step  = parameter['step']
         name  = parameter['name']
 
-        for value in range(start, stop, step):
+        for value in np.arange(start, stop, step):
             config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1}'.format( \
                 name, value)
 
@@ -52,7 +54,7 @@ def test_one_with_preset(img, parameter_with_preset):
 
     preset_options.strip()
 
-    for value in range(start, stop, step):
+    for value in np.arange(start, stop, step):
         config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1} {2}'.format( \
             name, value, preset_options)
         with open('out{0}.txt'.format(counter), 'w') as f:
@@ -70,8 +72,8 @@ def correlation(img, first_param, second_param):
 
     global counter
 
-    for first in range(first_param['start'], first_param['stop'], first_param['step']):
-        for second in range(second_param['start'], second_param['stop'], second_param['step']):
+    for first in np.arange(first_param['start'], first_param['stop'], first_param['step']):
+        for second in np.arange(second_param['start'], second_param['stop'], second_param['step']):
             config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1} {2}={3}'.format( \
                                                             first_param['name'], first, second_param['name'], second)
             with open('out{0}.txt'.format(counter), 'w') as f:
@@ -94,16 +96,10 @@ if __name__ == '__main__':
     # [start, stop)
     parameters = [
         {
-            'name' : 'textord_blshift_maxshift',
+            'name' : 'tosp_min_sane_kn_sp',
             'start': 0,
-            'stop' : 2,
-            'step' :1
-        },
-        {
-            'name': 'textord_noise_rowratio',
-            'start': 0,
-            'stop': 2,
-            'step': 1
+            'stop' : 1,
+            'step' : 0.5
         }
     ]
 
@@ -112,7 +108,7 @@ if __name__ == '__main__':
             'name' : 'textord_blshift_maxshift',
             'start': 0,
             'stop' : 2,
-            'step' :1
+            'step' : 0.5
         },
         'preset': [
             {
