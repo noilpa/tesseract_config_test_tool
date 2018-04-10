@@ -16,6 +16,7 @@ pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\
 
 output_folder = './out'
 ideal_file_path = './ideal.txt'
+diff_folder = './diff'
 
 def test_one(img, parameters):
 
@@ -128,7 +129,7 @@ def match_with_ideal():
         #
         # print('#' * 60)
 
-        with open('{0}/diff_{1}'.format(output_folder, file), 'w') as f:
+        with open('{0}/diff_{1}'.format(diff_folder, file), 'w') as f:
 
             for line in difflib.unified_diff(lines1, lines2, fromfile='ideal', tofile=file):
                 print(line, file=f)
@@ -149,7 +150,8 @@ if __name__ == '__main__':
         shutil.rmtree(output_folder)
     os.makedirs(output_folder)
 
-
+    if not os.path.exists(diff_folder):
+        os.makedirs(diff_folder)
 
     # [start, stop)
     parameters = [
