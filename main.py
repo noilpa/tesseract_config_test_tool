@@ -4,17 +4,23 @@ except ImportError:
     from PIL import Image
 import pytesseract
 import numpy as np
+import shutil
 import os
+import difflib
+from pprint import pprint
 
 counter = 0
 
 # change for your tesseract path
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract'
 
+output_folder = './out'
+ideal_file_path = './ideal.txt'
 
 def test_one(img, parameters):
 
     global counter
+    global output_folder
 
     for parameter in parameters:
 
@@ -27,7 +33,7 @@ def test_one(img, parameters):
             config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1}'.format( \
                 name, value)
 
-            with open('out{0}.txt'.format(counter), 'w') as f:
+            with open('./out/out{0}.txt'.format(counter), 'w') as f:
 
                 # Print options in file start
                 print(name, value, '\n', file=f)
@@ -41,6 +47,7 @@ def test_one(img, parameters):
 def test_one_with_preset(img, parameter_with_preset):
 
     global counter
+    global output_folder
 
     start = parameter_with_preset['parameter']['start']
     stop = parameter_with_preset['parameter']['stop']
@@ -57,7 +64,7 @@ def test_one_with_preset(img, parameter_with_preset):
     for value in np.arange(start, stop, step):
         config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1} {2}'.format( \
             name, value, preset_options)
-        with open('out{0}.txt'.format(counter), 'w') as f:
+        with open('{0}/out{1}.txt'.format(output_folder, counter), 'w') as f:
             # Print options in file start
             print(name, value, file=f)
             print(preset_options, '\n', file=f)
@@ -71,12 +78,13 @@ def test_one_with_preset(img, parameter_with_preset):
 def correlation(img, first_param, second_param):
 
     global counter
+    global output_folder
 
     for first in np.arange(first_param['start'], first_param['stop'], first_param['step']):
         for second in np.arange(second_param['start'], second_param['stop'], second_param['step']):
             config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata" -c {0}={1} {2}={3}'.format( \
                                                             first_param['name'], first, second_param['name'], second)
-            with open('out{0}.txt'.format(counter), 'w') as f:
+            with open('{0}/out{1}.txt'.format(output_folder, counter), 'w') as f:
                 # Print options in file start
                 print(first_param['name'], first, file=f)
                 print(second_param['name'], second, '\n', file=f)
@@ -87,19 +95,67 @@ def correlation(img, first_param, second_param):
             counter += 1
 
 
+def match_with_ideal():
+    files = os.listdir(output_folder)
+
+    text1 = open(ideal_file_path).read().split('\n')
+    # text1_set = set(text1)
+
+    lines1 = open(ideal_file_path).readlines()
+
+    for file in files:
+        file_path = output_folder + '/' + file
+
+        text2 = open(file_path).read().split('\n')
+        # text2_set = set(text2)
+
+        lines2 = open(file_path).readlines()
+        #
+        # added = text1_set - text2_set
+        # removed = text2_set - text1_set
+        #
+        # for line in text1_set:
+        #     if line in added:
+        #         print('- ', line.strip())
+        #     elif line in removed:
+        #         print('+ ', line.strip())
+        #
+        # for line in text2_set:
+        #     if line in added:
+        #         print('- ', line.strip())
+        #     elif line in removed:
+        #         print('+ ', line.strip())
+        #
+        # print('#' * 60)
+
+        for line in difflib.unified_diff(lines1, lines2, fromfile='ideal', tofile=file):
+            print(line)
+
+        persetage = difflib.SequenceMatcher(None, text1, text2).ratio() * 100
+        print('Совпадение:', persetage, '%')
+        print('#'*60)
+
+
 if __name__ == '__main__':
 
     path = r'385299605.tif'
 
     img = Image.open(path)
 
+    # # clear output folder folder
+    # if os.path.exists(output_folder):
+    #     shutil.rmtree(output_folder)
+    # os.makedirs(output_folder)
+
+
+
     # [start, stop)
     parameters = [
         {
             'name' : 'tosp_min_sane_kn_sp',
-            'start': 0,
-            'stop' : 1,
-            'step' : 0.5
+            'start': 9,
+            'stop' : 10,
+            'step' : 1
         }
     ]
 
@@ -126,8 +182,9 @@ if __name__ == '__main__':
         ]
     }
 
-    # test_one(img, parameters)
+    # test_one(img, parameters, output_folder)
     # correlation(img, parameters[0], parameters[1])
     # test_one_with_preset(img, parameter_with_preset)
+    match_with_ideal()
 
 
