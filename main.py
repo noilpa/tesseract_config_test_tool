@@ -157,38 +157,51 @@ if __name__ == '__main__':
     parameters = [
         {
             'name' : 'tosp_min_sane_kn_sp',
-            'start': 9,
-            'stop' : 10,
-            'step' : 1
+            'start': 0,
+            'stop' : 25,
+            'step' : 5
+        },
+        {
+            'name': 'tosp_table_xht_sp_ratio',
+            'start': 0,
+            'stop': 10,
+            'step': 3
+        },
+        {
+            'name': 'textord_spacesize_ratiofp',
+            'start': 0,
+            'stop': 25,
+            'step': 5
         }
+
     ]
 
     parameter_with_preset = {
         'parameter': {
-            'name' : 'textord_blshift_maxshift',
-            'start': 0,
-            'stop' : 2,
-            'step' : 0.5
+            'name' : 'textord_spacesize_ratiofp',
+            'start': 2,
+            'stop' : 4,
+            'step' : 1
         },
         'preset': [
             {
-                'name': 'textord_noise_rowratio',
-                'value': 4
+                'name': 'tosp_min_sane_kn_sp',
+                'value': 9
             },
             {
-                'name': 'textord_noise_sxfract',
-                'value': 5
+                'name': 'load_system_dawg',
+                'value': 0
             },
             {
-                'name': 'textord_initialasc_ile',
-                'value': 6
+                'name': 'load_freq_dawg',
+                'value': 0
             }
         ]
     }
 
-    # test_one(img, parameters, output_folder)
+    # test_one(img, parameters)
     # correlation(img, parameters[0], parameters[1])
-    # test_one_with_preset(img, parameter_with_preset)
-    # match_with_ideal()
+    test_one_with_preset(img, parameter_with_preset)
+    match_with_ideal()
 
 
